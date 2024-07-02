@@ -55,7 +55,7 @@ public class CompanyDto {
 
     @JsonProperty("documents")
     @Schema(description = "Список документов, связанных11 с компанией")
-    private List<String> documentsIds = new ArrayList<>();
+    private List<Long> documentsIds = new ArrayList<>();
 
 
 }

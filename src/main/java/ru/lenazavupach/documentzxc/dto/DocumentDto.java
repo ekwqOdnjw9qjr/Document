@@ -52,5 +52,5 @@ public class DocumentDto {
 
     @JsonProperty("companyId")
     @Schema(description = "Компания, связанная с документом")
-    private String companyId;
+    private Long companyId;
 }

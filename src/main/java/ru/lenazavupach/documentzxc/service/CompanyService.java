@@ -30,8 +30,8 @@ public class CompanyService {
 
 
     public List<CompanyDto> getAll() {
-        List<Company> companies = companyRepository.findAll();
-        return companyMapper.toListDto(companies);
+        List<Company> companyList = companyRepository.findAll();
+        return companyMapper.toListDto(companyList);
     }
 
     public CompanyDto getById(Long id) {
@@ -40,17 +40,43 @@ public class CompanyService {
         return companyMapper.toDto(company);
     }
 
-    @Transactional
-    public void create(CompanyDto companyDto) {
-
-
-        Company company = companyMapper.toEntity(companyDto);
-        List<Document> documents = Collections.singletonList
-                (documentRepository.findByTitle(String.valueOf(companyDto.getDocumentsIds())));
-        company.setDocuments(documents);
-        companyRepository.save(company);
+    public List<CompanyDto> findCompanyByName(String name) {
+        List<Company> companyList = companyRepository.findCompaniesByName(name);
+        return companyMapper.toListDto(companyList);
     }
 
+    public List<CompanyDto> findCompanyByAddress(String address) {
+        List<Company> companyList = companyRepository.findCompaniesByAddress(address);
+        return companyMapper.toListDto(companyList);
+    }
+
+    public List<CompanyDto> findCompanyByEmail(String email) {
+        List<Company> companyList = companyRepository.findCompaniesByEmail(email);
+        return companyMapper.toListDto(companyList);
+    }
+
+    public List<CompanyDto> findCompanyByInn(Long inn) {
+        List<Company> companyList = companyRepository.findCompaniesByInn(inn);
+        return companyMapper.toListDto(companyList);
+    }
+
+    public List<CompanyDto> findCompanyByPhoneForCalls(Long phoneForCalls) {
+        List<Company> companyList = companyRepository.findCompaniesByPhoneForCalls(phoneForCalls);
+        return companyMapper.toListDto(companyList);
+    }
+
+    @Transactional
+    public void create(CompanyDto companyDto) {
+        Company company = companyMapper.toEntity(companyDto);
+
+        // Если есть идентификаторы документов, связываем компанию с этими документами
+        if (companyDto.getDocumentsIds() != null && !companyDto.getDocumentsIds().isEmpty()) {
+            List<Document> documents = documentRepository.findAllById(companyDto.getDocumentsIds());
+            company.setDocuments(new ArrayList<>(documents));
+        }
+
+        companyRepository.save(company);
+    }
 
     public CompanyDto update(CompanyDto companyDto, Long id) {
         Company oldCompany = companyRepository.findById(id)

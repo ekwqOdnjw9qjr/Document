@@ -26,13 +26,13 @@ public interface CompanyMapper {
 
     void merge(@MappingTarget Company target, Company source);
 
-    @Named("mapDocumentsToTitle")
-    default List<String> mapDocumentsToIds(List<Document> documents) {
+    @Named("mapDocumentsToIds")
+    default List<Long> mapDocumentsToIds(List<Document> documents) {
         if (documents == null) {
             return null;
         }
         return documents.stream()
-                .map(Document::getTitle)
+                .map(Document::getId)
                 .collect(Collectors.toList());
     }
 }

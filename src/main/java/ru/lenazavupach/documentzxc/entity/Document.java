@@ -44,7 +44,7 @@ public class Document {
     private Long number;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "company_id")
+    @JoinColumn(name = "company_id",foreignKey = @ForeignKey(name = "documents_company_fk"))
     @JsonIgnore
     private Company company;
 

@@ -6,6 +6,7 @@ import jakarta.validation.Valid;
 import jakarta.validation.constraints.Min;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import ru.lenazavupach.documentzxc.baseresponse.BaseResponseService;
@@ -13,37 +14,69 @@ import ru.lenazavupach.documentzxc.baseresponse.ResponseWrapper;
 import ru.lenazavupach.documentzxc.dto.DocumentDto;
 import ru.lenazavupach.documentzxc.service.DocumentService;
 
+import java.time.LocalDate;
 import java.util.List;
 
 @Validated
 @RestController
 @RequestMapping("/documents")
 @RequiredArgsConstructor
-@Tag(name = "ДОкументы", description = "Операции над картинами")
+@Tag(name = "Document", description = "Document operations")
 public class DocumentController {
     private final DocumentService documentService;
     private final BaseResponseService baseResponseService;
 
     @Operation(
-            summary = "Получение всех картин",
-            description = "Позволяет выгрузить все картины из БД")
+            summary = "Getting all documents",
+            description = "Allows you to unload all documents from the database")
     @GetMapping
     public ResponseWrapper<List<DocumentDto>> findAll() {
         return baseResponseService.wrapSuccessResponse(documentService.getAll());
     }
 
     @Operation(
-            summary = "Получение картины по ID",
-            description = "Позволяет выгрузить одну картину по ID из БД")
+            summary = "Retrieving a document by ID",
+            description = "Allows to unload a single document by ID from the database")
     @GetMapping("/document/{id}")
     public ResponseWrapper<DocumentDto> getById(@PathVariable @Min(0) Long id) {
         return baseResponseService.wrapSuccessResponse(documentService.getById(id));
     }
 
+    @Operation(
+            summary = "Search for a document by author's full name",
+            description = "Allows you to find documents with a specified author")
+    @GetMapping("/document/findByAuthor")
+    public ResponseWrapper<List<DocumentDto>> findByAuthor(String author) {
+        return baseResponseService.wrapSuccessResponse(documentService.findByAuthor(author));
+    }
 
     @Operation(
-            summary = "Создать картину",
-            description = "Позволяет создать новую запись о картине в БД"
+            summary = "Search for a document by title",
+            description = "Allows you to find documents with a specified title")
+    @GetMapping("/document/findByTitle")
+    public ResponseWrapper<List<DocumentDto>> findByTitle(String title) {
+        return baseResponseService.wrapSuccessResponse(documentService.findByTitle(title));
+    }
+
+    @Operation(
+            summary = "Search for a document by type",
+            description = "Allows you to find documents with a specified type")
+    @GetMapping("/document/findByType")
+    public ResponseWrapper<List<DocumentDto>> findByType(String type) {
+        return baseResponseService.wrapSuccessResponse(documentService.findByType(type));
+    }
+
+    @Operation(
+            summary = "Search for a document by date",
+            description = "Allows you to find documents with a specified date")
+    @GetMapping("/document/findByDate")
+    public ResponseWrapper<List<DocumentDto>> findByDate(LocalDate date) {
+        return baseResponseService.wrapSuccessResponse(documentService.findByDate(date));
+    }
+
+    @Operation(
+            summary = "create a document",
+            description = "Allows you to create a new document record in the database"
     )
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
@@ -52,16 +85,18 @@ public class DocumentController {
     }
 
     @Operation(
-            summary = "Обновить данные о картине ",
-            description = "Позволяет обновить информацию о картине в БД")
-    @PutMapping("/document/")
-    public DocumentDto updateDocument(@PathVariable Long id, @RequestBody @Valid DocumentDto documentDto) {
-        return documentService.update(documentDto, id);
+            summary = "Update document data",
+            description = "Allows you to update information about the document in the database")
+    @PutMapping("/document/{id}")
+    public ResponseEntity<DocumentDto> updateDocument(@PathVariable Long id, @RequestBody @Valid DocumentDto documentDto) {
+        DocumentDto document = documentService.update(documentDto, id);
+        return ResponseEntity.ok(document);
     }
 
+
     @Operation(
-            summary = "Удалить картину по ID ",
-            description = "Позволяет удалить картину по ID из БД")
+            summary = "Delete document by ID",
+            description = "Allows you to delete a document by ID from the database")
     @DeleteMapping("/document/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void delete(@PathVariable @Min(0) Long id) {
